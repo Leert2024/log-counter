@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>数据可视化面板</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; }
+        .data-list { list-style-type: none; padding: 0; }
+        .data-item { padding: 8px; border-bottom: 1px solid #eee; }
+        .data-item:last-child { border-bottom: none; }
+        .chart-section { margin-top: 30px; }
+        .chart-title { margin-bottom: 10px; color: #333; }
+    </style>
+</head>
+<body>
+    <h1>最近30天访问量统计</h1>
+    <ul class="data-list" id="data-list"></ul>
+
+    <!-- 新增热度数据展示区域 -->
+    <div class="chart-section">
+        <h2 class="chart-title">交易热度分布</h2>
+        <ul class="data-list" id="pie-chart-list"></ul>
+    </div>
+
+    <script>
+        // 访问量数据获取
+        fetch('/dashboard/api/get_line_chart')
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById('data-list');
+                for (const date in data) {
+                    const li = document.createElement('li');
+                    li.textContent = `${date}: ${data[date]}次`;
+                    list.appendChild(li);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.body.innerHTML = `<p>数据加载失败，请检查控制台</p>`;
+            });
+
+        // 新增热度数据获取和展示
+        fetch('/dashboard/api/get_pie_chart')
+            .then(response => response.json())
+            .then(data => {
+                const pieList = document.getElementById('pie-chart-list');
+                
+                // 创建并添加标题项
+                const titleLi = document.createElement('li');
+                titleLi.textContent = "交易热度分布（最近30天）";
+                titleLi.style.fontWeight = "bold";
+                titleLi.style.color = "#666";
+                pieList.appendChild(titleLi);
+
+                // 遍历数据并生成列表项
+                for (const label in data) {
+                    const li = document.createElement('li');
+                    li.textContent = `${label}: ${data[label]}次`;
+                    li.style.paddingLeft = "20px";  // 添加缩进区分层级
+                    pieList.appendChild(li);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const errorLi = document.createElement('li');
+                errorLi.textContent = "热度数据加载失败，请检查控制台";
+                errorLi.style.color = "red";
+                document.getElementById('pie-chart-list').appendChild(errorLi);
+            });
+    </script>
+</body>
+</html>

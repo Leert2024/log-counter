@@ -1,0 +1,23 @@
+// Statistics服务
+// 服务端:接收客户端发送的获取log文件的请求，以二进制形式返回log文件
+// 客户端:发出获取log文件的请求，接收服务端传回的log文件
+
+syntax = "proto3";
+
+package test;
+
+// 定义Statistics服务
+service Statistics{
+    // 定义get_log方法，接收Statistics_request，返回Statistics_response
+    rpc get_log (Statistics_request) returns (Statistics_response);
+}
+
+// 定义Statistics_request消息体，包含一个字符串
+message Statistics_request{
+    string req = 1;  
+}
+
+// 定义Statistics_response消息体，包含bytes形式的log文件
+message Statistics_response{  
+    bytes log = 1;
+}
